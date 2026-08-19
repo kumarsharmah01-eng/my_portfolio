@@ -2,19 +2,27 @@
   "name": "portfolio",
   "version": "1.0.0",
   "description": "PERSONAL PORTFOLIO",
-  "homepage": "https://github.com/kumarsharmah01-eng/my_portfolio#readme",
+  "homepage": "https://github.com/kumarsharma01-eng/my_portfolio#readme",
   "bugs": {
-    "url": "https://github.com/kumarsharmah01-eng/my_portfolio/issues"
+    "url": "https://github.com/kumarsharma01-eng/my_portfolio/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kumarsharmah01-eng/my_portfolio.git"
+    "url": "https://github.com/kumarsharma01-eng/my_portfolio.git"
   },
   "license": "ISC",
   "author": "HARSH",
-  "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
