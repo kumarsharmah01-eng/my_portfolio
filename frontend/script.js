@@ -55,18 +55,19 @@ clickable.forEach((element) => {
 ===================================== */
 
 const menuButton = document.querySelector(".menu-btn");
-
 const navLinks = document.querySelector(".nav-links");
 
-menuButton.addEventListener("click", () => {
-  navLinks.classList.toggle("active");
-});
-
-document.querySelectorAll(".nav-links a").forEach((link) => {
-  link.addEventListener("click", () => {
-    navLinks.classList.remove("active");
+if (menuButton && navLinks) {
+  menuButton.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
   });
-});
+
+  document.querySelectorAll(".nav-links a").forEach((link) => {
+    link.addEventListener("click", () => {
+      navLinks.classList.remove("active");
+    });
+  });
+}
 
 /* =====================================
    SCROLL REVEAL
@@ -115,29 +116,47 @@ projectCards.forEach((card, index) => {
 /* =====================================
    CONTACT FORM
 ===================================== */
-
 const contactForm = document.getElementById("contactForm");
+const formStatus = document.getElementById("form-status");
 
-contactForm.addEventListener("submit", (event) => {
-  event.preventDefault();
+if (contactForm) {
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  const name = document.getElementById("name").value;
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
 
-  const email = document.getElementById("email").value;
+    formStatus.textContent = "Sending...";
 
-  const message = document.getElementById("message").value;
+    try {
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+        }),
+      });
 
-  if (name === "" || email === "" || message === "") {
-    alert("Please complete all fields.");
+      const data = await response.json();
 
-    return;
-  }
-
-  alert(`Message received, ${name} 🩸`);
-
-  contactForm.reset();
-});
-
+      if (response.ok) {
+        formStatus.textContent = "Message sent successfully! ✅";
+        contactForm.reset();
+      } else {
+        formStatus.textContent = data.message || "Something went wrong ❌";
+      }
+    } catch (error) {
+      console.error("Contact Error:", error);
+      formStatus.textContent =
+        "Unable to send message. Please try again later.";
+    }
+  });
+}
 /* =====================================
    PARALLAX EFFECT
 ===================================== */

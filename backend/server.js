@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const env = require("dotenv").config();
+require("dotenv").config();
 
 const app = express();
 
@@ -11,6 +11,32 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+/* ================================
+   GMAIL TRANSPORTER
+================================ */
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+/* ================================
+   CHECK GMAIL CONNECTION
+================================ */
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Gmail connection failed:");
+    console.error(error);
+  } else {
+    console.log("✅ Gmail server is ready");
+  }
+});
 
 /* ================================
    HOME ROUTE
@@ -26,32 +52,33 @@ app.get("/", (req, res) => {
 /* ================================
    LEETCODE STATS API
 ================================ */
-
 app.get("/api/leetcode/stats", async (req, res) => {
   try {
     const query = `
-            query userProfile($username: String!) {
-                matchedUser(username: $username) {
-                    submitStats {
-                        acSubmissionNum {
-                            difficulty
-                            count
-                        }
-                    }
-                }
-            }
-        `;
+      query userProfile($username: String!) {
+        matchedUser(username: $username) {
+          username
 
-    const response = await fetch("https://leetcode.com/graphql", {
+          submitStats {
+            acSubmissionNum {
+              difficulty
+              count
+            }
+          }
+        }
+      }
+    `;
+
+    const response = await fetch("https://leetcode.com/graphql/", {
       method: "POST",
 
       headers: {
         "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0",
       },
 
       body: JSON.stringify({
         query,
-
         variables: {
           username: process.env.LEETCODE_USERNAME,
         },
@@ -60,14 +87,29 @@ app.get("/api/leetcode/stats", async (req, res) => {
 
     const data = await response.json();
 
-    const stats = data?.data?.matchedUser?.submitStats?.acSubmissionNum;
+    console.log("LeetCode response:", JSON.stringify(data, null, 2));
 
-    if (!stats) {
+    // Check GraphQL errors
+    if (data.errors) {
+      console.error("LeetCode GraphQL Error:", data.errors);
+
+      return res.status(500).json({
+        success: false,
+        message: "LeetCode API error",
+        errors: data.errors,
+      });
+    }
+
+    const user = data?.data?.matchedUser;
+
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "LeetCode user not found",
       });
     }
+
+    const stats = user.submitStats?.acSubmissionNum || [];
 
     const totalSolved = stats.find((item) => item.difficulty === "All");
 
@@ -80,12 +122,11 @@ app.get("/api/leetcode/stats", async (req, res) => {
     res.json({
       success: true,
 
+      username: user.username,
+
       solved: totalSolved?.count || 0,
-
       easy: easySolved?.count || 0,
-
       medium: mediumSolved?.count || 0,
-
       hard: hardSolved?.count || 0,
     });
   } catch (error) {
@@ -94,94 +135,7 @@ app.get("/api/leetcode/stats", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch LeetCode stats",
-    });
-  }
-});
-
-/* ================================
-   CONTACT API
-================================ */
-
-app.post("/api/contact", async (req, res) => {
-  try {
-    const { name, email, subject, message } = req.body;
-
-    /* VALIDATION */
-
-    if (!name || !email || !subject || !message) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    /* EMAIL TRANSPORT */
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    /* SEND EMAIL */
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-
-      to: process.env.EMAIL_USER,
-
-      replyTo: email,
-
-      subject: `Portfolio: ${subject}`,
-
-      html: `
-                <div style="
-                    font-family: Arial;
-                    padding: 20px;
-                ">
-
-                    <h2>
-                        New Portfolio Message
-                    </h2>
-
-                    <p>
-                        <strong>Name:</strong>
-                        ${name}
-                    </p>
-
-                    <p>
-                        <strong>Email:</strong>
-                        ${email}
-                    </p>
-
-                    <p>
-                        <strong>Subject:</strong>
-                        ${subject}
-                    </p>
-
-                    <hr>
-
-                    <p>
-                        ${message}
-                    </p>
-
-                </div>
-            `,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Message sent successfully",
-    });
-  } catch (error) {
-    console.error("Email Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to send message",
+      error: error.message,
     });
   }
 });
@@ -193,5 +147,5 @@ app.post("/api/contact", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
