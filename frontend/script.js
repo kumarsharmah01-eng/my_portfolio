@@ -116,6 +116,7 @@ projectCards.forEach((card, index) => {
 /* =====================================
    CONTACT FORM
 ===================================== */
+
 const contactForm = document.getElementById("contactForm");
 const formStatus = document.getElementById("form-status");
 
@@ -123,9 +124,14 @@ if (contactForm) {
   contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const message = document.getElementById("message").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    if (!name || !email || !message) {
+      formStatus.textContent = "Please fill all fields.";
+      return;
+    }
 
     formStatus.textContent = "Sending...";
 
@@ -136,14 +142,13 @@ if (contactForm) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          email,
-          message,
+          name: name,
+          email: email,
+          message: message,
         }),
       });
 
       const data = await response.json();
-
       if (response.ok) {
         formStatus.textContent = "Message sent successfully! ✅";
         contactForm.reset();
@@ -152,6 +157,7 @@ if (contactForm) {
       }
     } catch (error) {
       console.error("Contact Error:", error);
+
       formStatus.textContent =
         "Unable to send message. Please try again later.";
     }
@@ -205,8 +211,6 @@ async function loadLeetCodeStats() {
     }
 
     const data = await response.json();
-
-    console.log("LeetCode Data:", data);
 
     solvedElement.textContent = `${data.solved}+`;
   } catch (error) {
