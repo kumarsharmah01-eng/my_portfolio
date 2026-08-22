@@ -84,7 +84,7 @@ app.get("/api/leetcode/stats", async (req, res) => {
         },
       }),
     });
-
+    console.log("LEETCODE USERNAME:", process.env.LEETCODE_USERNAME);
     const data = await response.json();
 
     console.log("LeetCode response:", JSON.stringify(data, null, 2));

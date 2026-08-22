@@ -136,17 +136,20 @@ if (contactForm) {
     formStatus.textContent = "Sending...";
 
     try {
-      const response = await fetch("http://localhost:5000/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://my-portfolio-d32a.onrender.com/api/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            message: message,
+          }),
         },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          message: message,
-        }),
-      });
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -203,22 +206,31 @@ window.addEventListener("scroll", () => {
 async function loadLeetCodeStats() {
   const solvedElement = document.getElementById("leetcode-solved");
 
-  try {
-    const response = await fetch("http://localhost:5000/api/leetcode/stats");
+  if (!solvedElement) {
+    console.error("leetcode-solved element not found");
+    return;
+  }
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch LeetCode stats");
-    }
+  try {
+    const response = await fetch(
+      "https://my-portfolio-d32a.onrender.com/api/leetcode/stats",
+    );
+
+    console.log("Response status:", response.status);
 
     const data = await response.json();
 
+    console.log("LeetCode Data:", data);
+
+    if (!data.success) {
+      throw new Error(data.message || "LeetCode API failed");
+    }
+
     solvedElement.textContent = `${data.solved}+`;
   } catch (error) {
-    console.error("Error fetching LeetCode stats:", error);
-
+    console.error("LeetCode Error:", error);
     solvedElement.textContent = "N/A";
   }
 }
 
-// Page load hote hi function chalega
 loadLeetCodeStats();
