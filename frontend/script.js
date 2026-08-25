@@ -112,56 +112,69 @@ const projectCards = document.querySelectorAll(".project-card");
 projectCards.forEach((card, index) => {
   card.style.transitionDelay = `${index * 0.15}s`;
 });
-
-/* =====================================
-   CONTACT FORM
-===================================== */
-
+//contact api
 const contactForm = document.getElementById("contactForm");
 const formStatus = document.getElementById("form-status");
+const submitBtn = contactForm.querySelector('button[type="submit"]');
 
-if (contactForm) {
-  contactForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+contactForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const message = document.getElementById("message").value.trim();
+  // 1. Gather input values
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const message = document.getElementById("message").value.trim();
 
-    if (!name || !email || !message) {
-      formStatus.textContent = "Please fill all fields.";
-      return;
+  // Basic client-side validation
+  if (!name || !email || !message) {
+    displayStatus("Please fill out all fields.", "error");
+    return;
+  }
+
+  // 2. Set UI loading state
+  submitBtn.disabled = true;
+  displayStatus("Sending message...", "loading");
+
+  try {
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        access_key: "YOUR_ACCESS_KEY_HERE",
+        name: name,
+        email: email,
+        message: message,
+        subject: `New submission from ${name}`,
+        from_name: "Portfolio Notification",
+      }),
+    });
+
+    const data = await response.json();
+
+    // 3. Handle Web3Forms response status
+    if (response.status === 200 && data.success) {
+      displayStatus("Message sent successfully! ✅", "success");
+      contactForm.reset();
+    } else {
+      // API-level errors (invalid key, rate limit, missing fields)
+      displayStatus(data.message || "Failed to send message. ❌", "error");
     }
+  } catch (error) {
+    // Network-level errors (offline, blocked request, DNS failure)
+    console.error("Submission Error:", error);
+    displayStatus("Network error. Check connection and try again.", "error");
+  } finally {
+    // 4. Restore submit button state
+    submitBtn.disabled = false;
+  }
+});
 
-    formStatus.textContent = "Sending...";
-
-    try {
-      // FIX: Galat 'xx9c' URL ko hata kar sahi 'h1p3' URL lagaya
-      const response = await fetch(
-        "https://my-portfolio-api-xx9c.onrender.com/api/contact",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, email, message }),
-        },
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        formStatus.textContent = "Message sent successfully! ✅";
-        contactForm.reset();
-      } else {
-        formStatus.textContent = data.message || "Something went wrong ❌";
-      }
-    } catch (error) {
-      console.error("Contact Error:", error);
-      formStatus.textContent =
-        "Unable to send message. Please try again later.";
-    }
-  });
+function displayStatus(msg, type) {
+  formStatus.textContent = msg;
+  formStatus.className = `status-msg ${type}`;
 }
 /* =====================================
    PARALLAX EFFECT
