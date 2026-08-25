@@ -13,13 +13,14 @@ app.use(cors());
 app.use(express.json());
 
 /* ================================
+/* ================================
    GMAIL TRANSPORTER
 ================================ */
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: false, // Port 587 ke liye false hona chahiye
+  secure: false, // true for 465, false for 587
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -27,6 +28,9 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 /* ================================
    CHECK GMAIL CONNECTION
