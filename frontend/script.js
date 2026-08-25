@@ -143,7 +143,7 @@ contactForm.addEventListener("submit", async (e) => {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        access_key: "YOUR_ACCESS_KEY_HERE",
+        access_key: "3136fd48-0ebf-47c3-b358-68c44b51d1a2",
         name: name,
         email: email,
         message: message,
