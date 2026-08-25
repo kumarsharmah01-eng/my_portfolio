@@ -2,11 +2,9 @@
 
 > A modern, anime-inspired developer portfolio built to showcase my skills, projects, coding journey, and achievements — with an Itachi Uchiha inspired visual experience.
 
-![Portfolio Preview](./assets/preview.png)
-
 ## 🌐 Live Portfolio
 
-🔗 [Visit My Portfolio](YOUR_LIVE_PORTFOLIO_URL)
+🔗 [Visit My Portfolio](https://my-portfolio-theta-three-15.vercel.app/)
 
 ---
 
@@ -22,7 +20,6 @@ The website showcases:
 - 🛠️ Technical Skills
 - 🚀 Projects
 - 🧠 DSA & LeetCode Progress
-- 🏆 Achievements
 - 📚 Learning Journey
 - 🔗 GitHub Profile
 - 📱 Responsive Design
@@ -92,7 +89,6 @@ The portfolio displays my current technical skills, including:
 - AI / Generative AI
 - System Design
 - DevOps
-- Cloud Technologies
 
 ---
 
