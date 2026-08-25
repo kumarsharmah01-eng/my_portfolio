@@ -128,6 +128,7 @@ if (contactForm) {
     const email = document.getElementById("email").value.trim();
     const message = document.getElementById("message").value.trim();
 
+    // Validation
     if (!name || !email || !message) {
       formStatus.textContent = "Please fill all fields.";
       return;
@@ -137,7 +138,7 @@ if (contactForm) {
 
     try {
       const response = await fetch(
-        "https://my-portfolio-d32a.onrender.com/api/contact",
+        "https://my-portfolio-api-xx9c.onrender.com/api/contact",
         {
           method: "POST",
           headers: {
@@ -152,6 +153,9 @@ if (contactForm) {
       );
 
       const data = await response.json();
+
+      console.log("Contact API Response:", data);
+
       if (response.ok) {
         formStatus.textContent = "Message sent successfully! ✅";
         contactForm.reset();
@@ -171,20 +175,20 @@ if (contactForm) {
 ===================================== */
 
 const hero = document.querySelector(".hero");
-
 const character = document.querySelector(".hero-character");
 
-hero.addEventListener("mousemove", (e) => {
-  const x = (window.innerWidth / 2 - e.clientX) / 50;
+if (hero && character) {
+  hero.addEventListener("mousemove", (e) => {
+    const x = (window.innerWidth / 2 - e.clientX) / 50;
+    const y = (window.innerHeight / 2 - e.clientY) / 50;
 
-  const y = (window.innerHeight / 2 - e.clientY) / 50;
+    character.style.transform = `translate(${x}px, ${y}px)`;
+  });
 
-  character.style.transform = `translate(${x}px, ${y}px)`;
-});
-
-hero.addEventListener("mouseleave", () => {
-  character.style.transform = "translate(0,0)";
-});
+  hero.addEventListener("mouseleave", () => {
+    character.style.transform = "translate(0,0)";
+  });
+}
 
 /* =====================================
    NAVBAR BACKGROUND
@@ -213,7 +217,7 @@ async function loadLeetCodeStats() {
 
   try {
     const response = await fetch(
-      "https://my-portfolio-d32a.onrender.com/api/leetcode/stats",
+      "https://my-portfolio-api-h1p3.onrender.com/api/leetcode/stats",
     );
 
     console.log("Response status:", response.status);
