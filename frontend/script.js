@@ -128,7 +128,6 @@ if (contactForm) {
     const email = document.getElementById("email").value.trim();
     const message = document.getElementById("message").value.trim();
 
-    // Validation
     if (!name || !email || !message) {
       formStatus.textContent = "Please fill all fields.";
       return;
@@ -137,6 +136,7 @@ if (contactForm) {
     formStatus.textContent = "Sending...";
 
     try {
+      // FIX: Galat 'xx9c' URL ko hata kar sahi 'h1p3' URL lagaya
       const response = await fetch(
         "https://my-portfolio-api-xx9c.onrender.com/api/contact",
         {
@@ -144,17 +144,11 @@ if (contactForm) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            message: message,
-          }),
+          body: JSON.stringify({ name, email, message }),
         },
       );
 
       const data = await response.json();
-
-      console.log("Contact API Response:", data);
 
       if (response.ok) {
         formStatus.textContent = "Message sent successfully! ✅";
@@ -164,7 +158,6 @@ if (contactForm) {
       }
     } catch (error) {
       console.error("Contact Error:", error);
-
       formStatus.textContent =
         "Unable to send message. Please try again later.";
     }
@@ -217,7 +210,7 @@ async function loadLeetCodeStats() {
 
   try {
     const response = await fetch(
-      "https://my-portfolio-api-h1p3.onrender.com/api/leetcode/stats",
+      "https://my-portfolio-api-xx9c.onrender.com/api/leetcode/stats",
     );
 
     console.log("Response status:", response.status);
